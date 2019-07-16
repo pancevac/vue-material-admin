@@ -6,10 +6,7 @@
     <v-text-field flat solo-inverted prepend-inner-icon="search" label="Search" clearable class="search"></v-text-field>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn flat href="mailto:wangqiangshen@gmail.com">Hire Me</v-btn>
-      <v-btn icon href="https://github.com/tookit/vue-material-admin">
-        <v-icon class="fa-2x">fa-github</v-icon>
-      </v-btn>
+      
       <v-btn icon @click="handleFullScreen()">
         <v-icon>fullscreen</v-icon>
       </v-btn>
