@@ -71,17 +71,17 @@ export const protectedRoute = [
     ]
   },
 
-  //list
+  //playlists
   {
-    path: "/cms",
+    path: "/profile",
     component: DefaultLayout,
-    redirect: "/cms/table",
-    meta: { title: "CMS", icon: "view_compact", group: "cms" },
+    redirect: "/profile/playlists/:id",
+    meta: { title: "Playlists", icon: "view_compact", group: "playlists" },
     children: [
       {
-        path: "/cms/table",
-        name: "ListTable",
-        meta: { title: "CMS Table" },
+        path: "/profile/playlists/:id",
+        name: "Playlists",
+        meta: { title: "Playlist tracks" },
         component: () => import(/* webpackChunkName: "table" */ "@/views/list/Table.vue")
       }
     ]

@@ -83,7 +83,7 @@
         </v-dialog>
 
         <v-flex sm12>
-          <h3>Tracks</h3>
+          <h3>{{ playlist.name }}</h3>
         </v-flex>
         <v-flex lg12>
           <v-card>
@@ -203,31 +203,34 @@ export default {
       },
 
       track: {},
-      playlists: {}
+      playlists: [],
+      playlist: {}
     }
   },
 
   mounted() {
-    this.getPlaylist()
+    this.getPlaylist(this.$route.params.id)
     this.getPlaylists()
   },
 
   methods: {
+
+    /**
+     * Get specific playlist info, including tracks for table.
+     */
+    getPlaylist(id) {
+      axios.get("/api/playlists/" + id).then(response => {
+        this.playlist = response.data
+        this.table.items = response.data.tracks
+      })
+    },
+
     /**
      * Get playlists for autocomplete component
      */
     getPlaylists() {
       axios.get("/api/playlists").then(response => {
         this.playlists = response.data.playlists
-      })
-    },
-
-    /**
-     * Get playlist's tracks, this is temporary
-     */
-    getPlaylist() {
-      axios.get("/api/playlists/1").then(response => {
-        this.table.items = response.data.tracks
       })
     },
 
