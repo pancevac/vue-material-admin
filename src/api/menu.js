@@ -1,5 +1,5 @@
 const Menu = [
-  { header: "Apps" },
+  { header: "Menu" },
   {
     title: "Dashboard",
     group: "apps",
@@ -7,42 +7,48 @@ const Menu = [
     name: "Dashboard"
   },
   {
-    title: "Chat",
+    title: "Home",
     group: "apps",
-    icon: "chat_bubble",
-    target: "_blank",
-    name: "Chat"
+    icon: "dashboard",
+    name: "Home"
   },
-  {
-    title: "Inbox",
-    group: "apps",
-    name: "Mail",
-    target: "_blank",
-    icon: "email"
-  },
+  // {
+  //   title: "Chat",
+  //   group: "apps",
+  //   icon: "chat_bubble",
+  //   target: "_blank",
+  //   name: "Chat"
+  // },
+  // {
+  //   title: "Inbox",
+  //   group: "apps",
+  //   name: "Mail",
+  //   target: "_blank",
+  //   icon: "email"
+  // },
   // {
   //   title: 'Media',
   //   group: 'apps',
   //   name: 'Media',
   //   icon: 'perm_media',
   // },
-  {
-    title: "Widgets",
-    group: "widgets",
-    component: "widgets",
-    icon: "widgets",
-    items: [
-      { name: "social", title: "Social", component: "SocialWidget" },
-      {
-        name: "statistic",
-        title: "Statistic",
-        badge: "new",
-        component: "StatisticWidget"
-      },
-      { name: "chart", title: "Chart", component: "ChartWidget" },
-      { name: "list", title: "List", component: "ListWidget" }
-    ]
-  },
+  // {
+  //   title: "Widgets",
+  //   group: "widgets",
+  //   component: "widgets",
+  //   icon: "widgets",
+  //   items: [
+  //     { name: "social", title: "Social", component: "SocialWidget" },
+  //     {
+  //       name: "statistic",
+  //       title: "Statistic",
+  //       badge: "new",
+  //       component: "StatisticWidget"
+  //     },
+  //     { name: "chart", title: "Chart", component: "ChartWidget" },
+  //     { name: "list", title: "List", component: "ListWidget" }
+  //   ]
+  // },
   { header: "CMS" },
   {
     title: "List & Query",
