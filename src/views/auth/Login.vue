@@ -2,8 +2,8 @@
   <v-card class="elevation-1 pa-3 login-card">
     <v-card-text>
       <div class="layout column align-center">
-        <img src="/static/m.png" alt="Vue Material Admin" width="120" height="120" />
-        <h1 class="flex my-4 primary--text">Material Admin Template</h1>
+        <img src="/static/m.png" alt="Ritmos Material Admin" width="120" height="120" />
+        <h1 class="flex my-4 primary--text">Ritmos Admin Template</h1>
       </div>
       <v-form>
         <v-text-field
@@ -12,6 +12,7 @@
           label="Login"
           type="text"
           v-model="model.username"
+          :error="errors.message ? true : false"
         ></v-text-field>
         <v-text-field
           append-icon="lock"
@@ -20,6 +21,7 @@
           id="password"
           type="password"
           v-model="model.password"
+          :error-messages="errors.message"
         ></v-text-field>
       </v-form>
     </v-card-text>
@@ -43,19 +45,40 @@
 export default {
   data: () => ({
     loading: false,
+    errors: {
+      message: null,
+    },
     model: {
-      username: "admin@isocked.com",
-      password: "password"
+      username: "",
+      password: ""
     }
   }),
+  
+  created() {
+    
+    // If auth user tries to access login page, redirect to home
+    if (this.$store.getters['auth/isAuth']) {
+      this.$router.push("/")
+    }
+  },
 
   methods: {
     login() {
       this.loading = true
+      
       // handle login
-      setTimeout(() => {
-        this.$router.push("/dashboard")
-      }, 1000)
+      axios.post("/api/login", this.model)
+        .then(response => {
+          this.$store.dispatch("auth/setAccessToken", {
+            token: response.data.access_token,
+            expires_in: response.data.expires_in
+          })
+          this.$router.push("/dashboard")
+        })
+        .catch(e => {
+          this.loading = false
+          this.errors.message = e.response.data.message
+        })
     }
   }
 }
