@@ -1,5 +1,5 @@
 const Menu = [
-  { header: "Menu" },
+  { header: "App" },
   {
     title: "Dashboard",
     group: "apps",
@@ -7,11 +7,17 @@ const Menu = [
     name: "Dashboard"
   },
   {
-    title: "Home",
+    title: "Latest tracks",
     group: "apps",
-    icon: "dashboard",
-    name: "Home"
+    icon: "audiotrack"
+    //name: ""
   },
+  // {
+  //   title: "Home",
+  //   group: "apps",
+  //   icon: "dashboard",
+  //   name: "Home"
+  // },
   // {
   //   title: "Chat",
   //   group: "apps",
@@ -49,7 +55,18 @@ const Menu = [
   //     { name: "list", title: "List", component: "ListWidget" }
   //   ]
   // },
-  { header: "CMS" },
+  { header: "My Music", protected: true },
+  {
+    title: "My playlists",
+    group: "profile",
+    icon: "fa-list",
+    // name: [route name],
+  },
+  {
+    title: "My unattached tracks",
+    group: "profile",
+    icon: "audiotrack"
+  },
   {
     title: "List & Query",
     group: "layout",

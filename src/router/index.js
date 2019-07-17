@@ -23,6 +23,13 @@ router.beforeEach((to, from, next) => {
       next()
   }
 
+  // pages that requires auth user
+  if (to.matched.some(record => record.meta.auth)) {
+    store.getters['auth/isAuth'] ? 
+    next() :
+    next({name: 'login'})
+  }
+
   //auth route is authenticated
   next()
 })

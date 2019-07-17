@@ -50,6 +50,7 @@ const auth = {
      */
     setAccessToken: (state, payload) => {
       state.access_token = payload.token // Set state
+      state.is_auth = true               // Set auth
       Vue.auth.setToken(                 // Set localstorage
         payload.token, 
         payload.expires_in + Date.now()
@@ -62,6 +63,7 @@ const auth = {
     destroyAccessToken: state => {
       Vue.auth.destroyToken(),
       state.access_token = null
+      state.is_auth = false
     }
 
   },
