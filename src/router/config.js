@@ -34,6 +34,8 @@ export const publicRoute = [
 ]
 
 export const protectedRoute = [
+
+  // App
   {
     path: "/",
     component: DefaultLayout,
@@ -41,150 +43,68 @@ export const protectedRoute = [
     redirect: "/dashboard",
     children: [
       {
-        path: "/dashboard",
-        name: "Dashboard",
-        meta: { title: "Home", group: "apps", icon: "dashboard" },
-        component: () => import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue")
-      },
-
-      {
         path: "/403",
         name: "Forbidden",
         meta: { title: "Access Denied", hiddenInMenu: true },
         component: () => import(/* webpackChunkName: "error-403" */ "@/views/error/Deny.vue")
-      }
-    ]
-  },
+      },
 
-  {
-    path: "/",
-    component: DefaultLayout,
-    redirect: "/home",
-    meta: { title: "Home", icon: "", group: "apps" },
-    children: [
       {
         path: "/home",
-        name: "Home",
-        meta: { title: "Home" },
-        component: () => import(/* webpackChunkName: "table" */ "@/views/Home.vue")
+        name: "home",
+        meta: { title: "Home", group: "apps" },
+        component: () => import(/* webpackChunkName: "error-403" */ "@/views/Home.vue")
+      },
+
+      {
+        path: "/playlists",
+        name: "playlists",
+        meta: { title: "Latest Playlists", group: "apps" },
+        //component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Playlists.vue")
+      },
+
+      {
+        path: "/playlists/:id",
+        name: "playlist",
+        meta: { title: "Playlist", group: "apps" },
+        //component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Playlist.vue")
+      },
+
+      {
+        path: "/tracks",
+        name: "tracks",
+        meta: { title: "Latest tracks", group: "apps" },
+        //component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Tracks.vue")
       }
     ]
   },
 
-  //playlists
+  // My music
   {
-    path: "/profile",
+    path: "/my-music",
     component: DefaultLayout,
-    redirect: "/profile/playlists/:id",
-    meta: { title: "Playlists", icon: "view_compact", group: "playlists" },
+    redirect: "/my-music/playlists",
+    meta: { title: "My Music", icon: "view_compact", group: "profile" },
     children: [
       {
-        path: "/profile/playlists/:id",
-        name: "Playlists",
-        meta: { title: "Playlist tracks" },
-        component: () => import(/* webpackChunkName: "table" */ "@/views/list/Table.vue")
+        path: "/my-music/dashboard",
+        name: "Dashboard",
+        meta: { title: "Home", group: "profile", icon: "dashboard" },
+        component: () => import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue")
+      },
+      {
+        path: "/my-music/playlists",
+        name: "my_playlists",
+        meta: { title: "Playlists", group: "profile", auth: true },
+        //component: () => import(/* webpackChunkName: "table" */ "@/views/list/MyPlaylists.vue"),
+      },
+      {
+        path: "/my-music/playlists/:id",
+        name: "my_playlist",
+        meta: { title: 'Playlist', group: "profile", auth: true },
+        component: () => import("@/views/list/MyPlaylist.vue")
       }
     ]
   },
 
-  //widgets
-  // {
-  //   path: "/widgets",
-  //   component: DefaultLayout,
-  //   meta: { title: "Widget", icon: "widgets", group: "advance" },
-  //   redirect: "/widgets/chart",
-  //   children: [
-  //     {
-  //       path: "/widgets/chart",
-  //       name: "ChartWidget",
-  //       meta: { title: "Chart Widget" },
-  //       component: () => import(/* webpackChunkName: "chart-widget" */ "@/views/widgets/Chart.vue")
-  //     },
-  //     {
-  //       path: "/widgets/list",
-  //       name: "ListWidget",
-  //       meta: { title: "List Widget" },
-  //       component: () => import(/* webpackChunkName: "list-widget" */ "@/views/widgets/List.vue")
-  //     },
-  //     {
-  //       path: "/widgets/social",
-  //       name: "SocialWidget",
-  //       meta: { title: "Social Widget" },
-  //       component: () => import(/* webpackChunkName: "social-widget" */ "@/views/widgets/Social.vue")
-  //     },
-  //     {
-  //       path: "/widgets/statistic",
-  //       name: "StatisticWidget",
-  //       meta: { title: "Statistic Widget" },
-  //       component: () => import(/* webpackChunkName: "statistic-widget" */ "@/views/widgets/Statistic.vue")
-  //     }
-  //   ]
-  // },
-
-  //media
-  // {
-  //   path: "/media",
-  //   meta: { title: "Media", group: "apps", icon: "media" },
-  //   name: "Media",
-  //   props: route => ({ type: route.query.type }),
-  //   component: () => import(/* webpackChunkName: "routes" */ `@/views/Media.vue`)
-  // },
-
-  // // chat app
-  // {
-  //   path: "/chat",
-  //   name: "Chat",
-  //   component: ChatLayout,
-  //   redirect: {
-  //     path: "/chat/messaging"
-  //   },
-  //   meta: { title: "Chat", group: "apps", icon: "chat_bubble" },
-  //   children: [
-  //     {
-  //       path: "/chat/messaging/:uuid?",
-  //       name: "ChatMessaging",
-  //       props: true,
-  //       components: () => import(/* webpackChunkName: "chat-messaging" */ `@/components/chat/ChatMessaging.vue`)
-  //     },
-  //     {
-  //       path: "/chat/contact/:uuid?",
-  //       meta: {
-  //         public: true
-  //       },
-  //       name: "ChatContact",
-  //       components: () => import(/* webpackChunkName: "chat-contact" */ `@/components/chat/ChatContact.vue`)
-  //     }
-  //   ]
-  // },
-
-  //mail app
-  // {
-  //   path: "/mail",
-  //   meta: {
-  //     public: true
-  //   },
-  //   name: "Mail",
-  //   component: () => import(/* webpackChunkName: "routes" */ `@/components/email/Layout.vue`),
-  //   redirect: {
-  //     path: "/mail/all"
-  //   },
-  //   children: [
-  //     {
-  //       path: "/mail/:mailType",
-  //       meta: {
-  //         public: true
-  //       },
-  //       name: "MailIndex",
-  //       component: () => import(/* webpackChunkName: "routes" */ `@/components/email/List.vue`)
-  //     },
-  //     {
-  //       path: "/mail/0/:uuid",
-  //       meta: {
-  //         public: true
-  //       },
-  //       name: "MailDetail",
-  //       component: () => import(/* webpackChunkName: "routes" */ `@/components/email/Reply.vue`)
-  //     }
-  //   ]
-  // }
 ]
