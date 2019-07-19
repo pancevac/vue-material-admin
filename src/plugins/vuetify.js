@@ -1,5 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify/lib"
+import { Ripple } from 'vuetify/lib/directives'
 import "../theme/default.styl"
 Vue.use(Vuetify, {
   theme: {
@@ -11,5 +12,8 @@ Vue.use(Vuetify, {
     success: "#4CAF50",
     warning: "#FFC107"
   },
-  customProperties: true
+  customProperties: true,
+  directives: {
+    Ripple
+  }
 })

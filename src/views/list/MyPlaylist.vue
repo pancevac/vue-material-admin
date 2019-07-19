@@ -18,6 +18,40 @@
           </v-card>
         </v-dialog>
 
+        <v-dialog v-model="dialogUpload" persistent max-width="600px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark v-on="on">Add Track</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Add new track</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12>
+                    <upload-btn ref="uploadButton" @file-update="prepareTrack"></upload-btn>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue darken-1"
+                flat
+                @click="dialogUpload = false, $refs.uploadButton.clear()"
+              >Close</v-btn>
+              <v-btn
+                color="blue darken-1"
+                flat
+                :loading="trackUploadLoading"
+                @click="uploadTrack"
+              >Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
         <v-dialog v-model="dialogEdit" max-width="600px">
           <v-card>
             <v-card-title>
@@ -168,9 +202,16 @@
 
 <script>
 import { Items as Users } from "@/api/user"
+import UploadButton from "vuetify-upload-button"
 export default {
+
+  components: {
+    "upload-btn": UploadButton
+  },
+
   data() {
     return {
+      dialogUpload: false,
       dialogEdit: false,
       dialogDelete: false,
       dialogAddToPlaylist: false,
@@ -201,6 +242,10 @@ export default {
         ],
         items: []
       },
+
+      newTrack: null,
+      formData: FormData,
+      trackUploadLoading: false,
 
       track: {},
       playlists: [],
@@ -260,7 +305,7 @@ export default {
     updateTrack(id) {
       this.dialogEdit = false
       axios.put("/api/tracks/" + id + "/update", this.track).then(response => {
-        this.getPlaylist() // refresh table
+        this.getPlaylist(this.$route.params.id) // refresh table
         this.track = {} // empty dialog form
       })
     },
@@ -278,7 +323,31 @@ export default {
 
     showAddToPlaylistDialog(id) {
       this.dialogAddToPlaylist = true
-    }
+    },
+
+    /**
+     * Prepare track for uploading
+     */
+    prepareTrack(file) {
+      // handle file here. File will be an object.
+      // If multiple prop is true, it will return an object array of files.
+      this.formData = new FormData()
+      this.formData.append("track", file)
+      this.formData.append("playlist_id", this.playlist.id)
+    },
+
+    /**
+     * Upload track
+     */
+    uploadTrack() {
+      this.trackUploadLoading = true
+      axios.post("/api/tracks", this.formData).then(response => {
+        this.trackUploadLoading = false
+        this.dialogUpload = false
+        this.$refs.uploadButton.clear()
+        this.getPlaylist(this.$route.params.id)
+      })
+    },
   }
 }
 </script>
