@@ -73,7 +73,7 @@ export default {
             token: response.data.access_token,
             expires_in: response.data.expires_in
           })
-          this.$router.push("/dashboard")
+          this.$router.push("/home")
         })
         .catch(e => {
           this.loading = false
