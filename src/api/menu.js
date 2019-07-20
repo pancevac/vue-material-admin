@@ -9,8 +9,8 @@ const Menu = [
   {
     title: "Latest tracks",
     group: "apps",
-    icon: "audiotrack"
-    //name: ""
+    icon: "audiotrack",
+    name: "tracks"
   },
 
   { header: "My Music", protected: true },

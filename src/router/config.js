@@ -74,7 +74,7 @@ export const protectedRoute = [
         path: "/tracks",
         name: "tracks",
         meta: { title: "Latest tracks", group: "apps" },
-        //component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Tracks.vue")
+        component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Tracks.vue")
       }
     ]
   },
