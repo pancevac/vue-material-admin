@@ -3,8 +3,19 @@
     <h3>Latest playlists</h3>
 
     <v-layout row wrap>
-      <v-flex xs12 lg3 sm6 v-for="(playlist, key) in playlists" :key="key">
-        <router-link :to="{ name: 'playlist', params: { id: playlist.id }}">
+      <v-progress-circular
+        v-if="playlistLoading"
+        :size="50"
+        color="primary"
+        indeterminate
+        style="margin: 50px auto"
+      ></v-progress-circular>
+
+      <v-flex xs12 lg4 sm6 v-for="(playlist, key) in playlists" :key="key">
+        <router-link
+          :to="{ name: 'playlist', params: { id: playlist.id }}"
+          style="text-decoration: none"
+        >
           <v-hover>
             <v-card
               slot-scope="{ hover }"
@@ -39,7 +50,7 @@
                   <div class="d-flex">
                     <div class="ml-2 grey--text text--darken-2">
                       <span>Total tracks</span>
-                      <span>(34)</span>
+                      <span>({{ playlist.tracks_count }})</span>
                     </div>
                   </div>
                 </div>
@@ -51,10 +62,24 @@
       </v-flex>
     </v-layout>
 
-    <h3 style="padding-top: 20px">Latest added tracks</h3>
+    <h3 style="padding-top: 20px">
+      <router-link
+        :to="{name: 'tracks'}"
+        style="text-decoration: none; color: black"
+      >Latest added tracks</router-link>
+    </h3>
 
     <v-layout row wrap>
-      <v-flex xs12 lg3 sm6 v-for="(track, key) in tracks" :key="key">
+
+      <v-progress-circular
+        v-if="trackLoading"
+        :size="50"
+        color="primary"
+        indeterminate
+        style="margin: 50px auto"
+      ></v-progress-circular>
+
+      <v-flex xs12 lg4 sm6 v-for="(track, key) in tracks" :key="key">
         <v-hover>
           <v-card
             slot-scope="{ hover }"
@@ -62,7 +87,7 @@
             class="mx-auto"
             width="350"
           >
-            <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/cards/cooking.png"></v-img>
+            <v-img :aspect-ratio="16/9" :src="track.image_url"></v-img>
             <v-card-title style="position: relative">
               <v-hover>
                 <v-expand-transition>
@@ -88,8 +113,9 @@
                 <span class="headline">{{ track.name }}</span>
                 <div class="d-flex">
                   <div class="ml-2 grey--text text--darken-2">
-                    <span>Total tracks</span>
-                    <span>(34)</span>
+                    <span v-if="track.artist">Artist: {{ track.artist }}</span>
+                    <br>
+                    <span v-if="track.album">Album: {{ track.album }}</span>
                   </div>
                 </div>
               </div>
@@ -107,7 +133,9 @@ export default {
   data() {
     return {
       playlists: [],
-      tracks: []
+      tracks: [],
+      playlistLoading: false,
+      trackLoading: false
     }
   },
 
@@ -121,7 +149,9 @@ export default {
      * Get public latest playlists
      */
     getPlaylists() {
+      this.playlistLoading = true
       axios.get("/api/playlists").then(response => {
+        this.playlistLoading = false
         this.playlists = response.data.playlists
       })
     },
@@ -130,21 +160,23 @@ export default {
      * Get public latest tracks
      */
     getTracks() {
+      this.trackLoading = true
       axios.get("/api/tracks").then(response => {
+        this.trackLoading = false
         this.tracks = response.data.tracks
       })
     },
 
-		/**
-		 * Play choosen playlist
-		 */
+    /**
+     * Play choosen playlist
+     */
     playPlaylist(id) {
       //
     },
 
-		/**
-		 * Play choosen track
-		 */
+    /**
+     * Play choosen track
+     */
     playTrack(id) {
       //
     }
