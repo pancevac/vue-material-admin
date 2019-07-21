@@ -1,6 +1,9 @@
 <template>
   <v-container grid-list-xl fluid>
-    <h3>Latest playlists</h3>
+    <h3><router-link
+        :to="{name: 'playlists'}"
+        style="text-decoration: none; color: black"
+      >Latest playlists</router-link></h3>
 
     <v-layout row wrap>
       <v-progress-circular

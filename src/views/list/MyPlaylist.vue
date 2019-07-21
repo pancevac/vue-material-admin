@@ -2,21 +2,47 @@
   <div class="list-table">
     <v-container grid-list-xl fluid>
       <v-layout row wrap>
-        <v-dialog v-model="dialogDelete" max-width="290">
-          <v-card>
-            <v-card-title class="headline">Delete track: {{ track.name }}?</v-card-title>
-
-            <v-card-text>You will not be able to revert this action!</v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn color="green darken-1" flat="flat" @click="dialogDelete = false">Cancel</v-btn>
-
-              <v-btn color="red darken-1" flat="flat" @click.stop="deleteTrack(track.id)">Delete</v-btn>
-            </v-card-actions>
+        <v-flex xs12 lg4>
+          <v-card width="350">
+            <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/cards/cooking.png"></v-img>
+            <v-btn small>Edit</v-btn>
+            <v-btn small color="primary">Listen</v-btn>
           </v-card>
-        </v-dialog>
+        </v-flex>
+        <v-flex xs12 lg4 ma-3>
+          <v-layout row wrap>
+            <v-flex d-flex>
+              <h2>
+                <b>{{ playlist.name }}</b>
+              </h2>
+            </v-flex>
+            <v-flex d-flex>
+              <ul class="header-info-list">
+                <li v-if="playlist.tracks_count !== 1">{{ playlist.tracks_count }} tracks</li>
+                <li v-else>{{ playlist.tracks_count }} track</li>
+                <li>{{ formatDurationTime() }}</li>
+                <li>Updated: 1 week ago</li>
+              </ul>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex xs12 lg12>
+          <v-dialog v-model="dialogDelete" max-width="290">
+            <v-card>
+              <v-card-title class="headline">Delete track: {{ track.name }}?</v-card-title>
+
+              <v-card-text>You will not be able to revert this action!</v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn color="green darken-1" flat="flat" @click="dialogDelete = false">Cancel</v-btn>
+
+                <v-btn color="red darken-1" flat="flat" @click.stop="deleteTrack(track.id)">Delete</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-flex>
 
         <v-dialog v-model="dialogUpload" persistent max-width="600px">
           <template v-slot:activator="{ on }">
@@ -145,6 +171,7 @@
                 class="elevation-1"
                 item-key="id"
                 select-all
+                :loading="dataLoading"
                 v-model="table.selected"
               >
                 <template slot="items" slot-scope="props">
@@ -204,13 +231,13 @@
 import { Items as Users } from "@/api/user"
 import UploadButton from "vuetify-upload-button"
 export default {
-
   components: {
     "upload-btn": UploadButton
   },
 
   data() {
     return {
+      dataLoading: false,
       dialogUpload: false,
       dialogEdit: false,
       dialogDelete: false,
@@ -259,12 +286,13 @@ export default {
   },
 
   methods: {
-
     /**
      * Get specific playlist info, including tracks for table.
      */
     getPlaylist(id) {
+      this.dataLoading = true
       axios.get("/api/playlists/" + id).then(response => {
+        this.dataLoading = false
         this.playlist = response.data
         this.table.items = response.data.tracks
       })
@@ -348,6 +376,11 @@ export default {
         this.getPlaylist(this.$route.params.id)
       })
     },
+
+    formatDurationTime() {
+      let duration = this.playlist.total_duration.split(":")
+      return duration[0] + ' hrs ' + duration[1] + ' mins ' 
+    }
   }
 }
 </script>

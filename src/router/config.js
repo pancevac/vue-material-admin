@@ -1,4 +1,4 @@
-import { AuthLayout, DefaultLayout, ChatLayout } from "@/components/layouts"
+import { AuthLayout, DefaultLayout } from "@/components/layouts"
 
 export const publicRoute = [
   { path: "*", component: () => import(/* webpackChunkName: "errors-404" */ "@/views/error/NotFound.vue") },
@@ -40,7 +40,7 @@ export const protectedRoute = [
     path: "/",
     component: DefaultLayout,
     meta: { title: "Home", group: "apps", icon: "" },
-    redirect: "/dashboard",
+    redirect: "/home",
     children: [
       {
         path: "/403",
@@ -60,7 +60,7 @@ export const protectedRoute = [
         path: "/playlists",
         name: "playlists",
         meta: { title: "Latest Playlists", group: "apps" },
-        //component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Playlists.vue")
+        component: () => import(/* webpackChunkName: "error-403" */ "@/views/list/Playlists.vue")
       },
 
       {
@@ -96,7 +96,7 @@ export const protectedRoute = [
         path: "/my-music/playlists",
         name: "my_playlists",
         meta: { title: "Playlists", group: "profile", auth: true },
-        //component: () => import(/* webpackChunkName: "table" */ "@/views/list/MyPlaylists.vue"),
+        component: () => import(/* webpackChunkName: "table" */ "@/views/list/MyPlaylists.vue"),
       },
       {
         path: "/my-music/playlists/:id",
