@@ -40,12 +40,30 @@ export default {
       showDrawer: true
     }
   },
+  
   methods: {
     handleDrawerVisiable() {
       this.showDrawer = !this.showDrawer
+    },
+
+    /**
+     * Handle sync auth user.
+     */
+    loadUser() {
+      
+      if (this.$store.getters["auth/getUser"] == null) {
+        axios
+          .get("/api/user")
+          .then(response => {
+            this.$store.dispatch("auth/setUser", response.data)
+          })
+      }
     }
   },
-  created() {}
+
+  created() {
+    this.loadUser()
+  }
 }
 </script>
 

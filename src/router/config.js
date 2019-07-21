@@ -84,13 +84,13 @@ export const protectedRoute = [
     path: "/my-music",
     component: DefaultLayout,
     redirect: "/my-music/playlists",
-    meta: { title: "My Music", icon: "view_compact", group: "profile" },
+    meta: { title: "My Music", icon: "view_compact", group: "profile", auth: true },
     children: [
       {
-        path: "/my-music/dashboard",
-        name: "Dashboard",
-        meta: { title: "Home", group: "profile", icon: "dashboard" },
-        component: () => import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard.vue")
+        path: "/my-music/my-profile",
+        name: "my-profile",
+        meta: { title: "My Profile", group: "profile", icon: "profile", auth: true },
+        component: () => import(/* webpackChunkName: "dashboard" */ "@/views/form/User.vue")
       },
       {
         path: "/my-music/playlists",

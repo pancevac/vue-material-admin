@@ -15,10 +15,10 @@ const Menu = [
 
   { header: "My Music", protected: true },
   {
-    title: "Dashboard",
+    title: "My Profile",
     group: "profile",
     icon: "dashboard",
-    name: "Dashboard"
+    name: "my-profile"
   },
   {
     title: "My playlists",

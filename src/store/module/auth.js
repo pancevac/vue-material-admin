@@ -64,6 +64,7 @@ const auth = {
       Vue.auth.destroyToken(),
       state.access_token = null
       state.is_auth = false
+      state.user = null
     }
 
   },

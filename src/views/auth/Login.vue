@@ -2,7 +2,7 @@
   <v-card class="elevation-1 pa-3 login-card">
     <v-card-text>
       <div class="layout column align-center">
-        <img src="/static/m.png" alt="Ritmos Material Admin" width="120" height="120" />
+        <img src="/static/m.png" alt="Ritmos Material Admin" width="120" height="120">
         <h1 class="flex my-4 primary--text">Ritmos Admin Template</h1>
       </div>
       <v-form>
@@ -46,18 +46,17 @@ export default {
   data: () => ({
     loading: false,
     errors: {
-      message: null,
+      message: null
     },
     model: {
       username: "",
       password: ""
     }
   }),
-  
+
   created() {
-    
     // If auth user tries to access login page, redirect to home
-    if (this.$store.getters['auth/isAuth']) {
+    if (this.$store.getters["auth/isAuth"]) {
       this.$router.push("/")
     }
   },
@@ -65,14 +64,22 @@ export default {
   methods: {
     login() {
       this.loading = true
-      
+
       // handle login
-      axios.post("/api/login", this.model)
+      axios
+        .post("/api/login", this.model)
         .then(response => {
           this.$store.dispatch("auth/setAccessToken", {
             token: response.data.access_token,
             expires_in: response.data.expires_in
           })
+
+          axios.defaults.headers.common["Authorization"] = "Bearer " + this.$store.getters["auth/getAccessToken"]
+
+          axios.get("/api/user").then(response => {
+            this.$store.dispatch("auth/setUser", response.data)
+          })
+
           this.$router.push("/home")
         })
         .catch(e => {
