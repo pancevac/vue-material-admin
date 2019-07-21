@@ -2,14 +2,27 @@
   <div class="list-table">
     <v-container grid-list-xl fluid>
       <v-layout row wrap>
-        <v-flex xs12 lg4>
+        <v-progress-circular
+          v-if="isPlaylistEmpty"
+          :size="50"
+          color="primary"
+          indeterminate
+          style="margin: 50px auto"
+        ></v-progress-circular>
+
+        <v-flex xs12 lg4 v-if="!isPlaylistEmpty">
           <v-card width="350">
-            <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/cards/cooking.png"></v-img>
-            <v-btn small>Edit</v-btn>
+            <v-img v-if="playlist.media_path" :aspect-radio="16/9" :src="playlist.media_path"></v-img>
+            <v-img
+              v-else
+              :aspect-ratio="16/9"
+              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+            ></v-img>
+            <v-btn @click.stop="dialog.playlistEdit = true" small>Edit</v-btn>
             <v-btn small color="primary">Listen</v-btn>
           </v-card>
         </v-flex>
-        <v-flex xs12 lg4 ma-3>
+        <v-flex xs12 lg4 ma-3 v-if="!isPlaylistEmpty">
           <v-layout row wrap>
             <v-flex d-flex>
               <h2>
@@ -20,14 +33,14 @@
               <ul class="header-info-list">
                 <li v-if="playlist.tracks_count !== 1">{{ playlist.tracks_count }} tracks</li>
                 <li v-else>{{ playlist.tracks_count }} track</li>
-                <li>{{ formatDurationTime() }}</li>
+                <li>{{ formatDurationTime }}</li>
                 <li>Updated: 1 week ago</li>
               </ul>
             </v-flex>
           </v-layout>
         </v-flex>
         <v-flex xs12 lg12>
-          <v-dialog v-model="dialogDelete" max-width="290">
+          <v-dialog v-model="dialog.trackDelete" max-width="290">
             <v-card>
               <v-card-title class="headline">Delete track: {{ track.name }}?</v-card-title>
 
@@ -36,7 +49,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
 
-                <v-btn color="green darken-1" flat="flat" @click="dialogDelete = false">Cancel</v-btn>
+                <v-btn color="green darken-1" flat="flat" @click="dialog.trackDelete = false">Cancel</v-btn>
 
                 <v-btn color="red darken-1" flat="flat" @click.stop="deleteTrack(track.id)">Delete</v-btn>
               </v-card-actions>
@@ -44,7 +57,7 @@
           </v-dialog>
         </v-flex>
 
-        <v-dialog v-model="dialogUpload" persistent max-width="600px">
+        <v-dialog v-model="dialog.trackUpload" persistent max-width="600px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark v-on="on">Add Track</v-btn>
           </template>
@@ -56,7 +69,7 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12>
-                    <upload-btn ref="uploadButton" @file-update="prepareTrack"></upload-btn>
+                    <upload-btn ref="uploadTrack" @file-update="prepareTrack"></upload-btn>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -66,19 +79,59 @@
               <v-btn
                 color="blue darken-1"
                 flat
-                @click="dialogUpload = false, $refs.uploadButton.clear()"
+                @click="dialog.trackUpload = false, $refs.uploadTrack.clear()"
               >Close</v-btn>
               <v-btn
                 color="blue darken-1"
                 flat
-                :loading="trackUploadLoading"
+                :loading="loading.trackUpload"
                 @click="uploadTrack"
               >Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="dialogEdit" max-width="600px">
+        <v-dialog v-model="dialog.playlistEdit" max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Edit Playlist</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12>
+                    <v-text-field label="Name*" required v-model="playlist.name"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-switch v-model="playlist.private" label="Private"></v-switch>
+                  </v-flex>
+
+                  <v-flex>
+                    <upload-btn ref="uploadImage" @file-update="prepareImage"></upload-btn>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              <small>*indicates required field</small>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue darken-1"
+                flat
+                @click="dialog.playlistEdit = false, $refs.uploadImage.clear()"
+              >Close</v-btn>
+              <v-btn
+                color="blue darken-1"
+                flat
+                :loading="loading.playlistUpdating"
+                @click="updatePlaylist(playlist.id)"
+              >Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="dialog.trackEdit" max-width="600px">
           <v-card>
             <v-card-title>
               <span class="headline">Edit track</span>
@@ -114,18 +167,23 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click="dialogEdit = false">Close</v-btn>
-              <v-btn color="blue darken-1" flat @click="updateTrack(track.id)">Save</v-btn>
+              <v-btn color="blue darken-1" flat @click="dialog.trackEdit = false">Close</v-btn>
+              <v-btn
+                color="blue darken-1"
+                flat
+                :loading="loading.trackUpdating"
+                @click="updateTrack(track.id)"
+              >Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="dialogAddToPlaylist" scrollable max-width="300px">
+        <v-dialog v-model="dialog.trackAddToPlaylist" scrollable max-width="300px">
           <v-card>
             <v-card-title>Select playlist</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px;">
-              <v-radio-group v-model="dialogm1" column>
+              <v-radio-group column>
                 <v-radio
                   v-for="(playlist, key) in playlists"
                   :key="key"
@@ -136,7 +194,7 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn color="blue darken-1" flat @click="dialogAddToPlaylist = false">Close</v-btn>
+              <v-btn color="blue darken-1" flat @click="dialog.trackAddToPlaylist = false">Close</v-btn>
               <v-btn color="blue darken-1" flat @click="dialog = false">Save</v-btn>
             </v-card-actions>
           </v-card>
@@ -171,7 +229,7 @@
                 class="elevation-1"
                 item-key="id"
                 select-all
-                :loading="dataLoading"
+                :loading="loading.trackLoading"
                 v-model="table.selected"
               >
                 <template slot="items" slot-scope="props">
@@ -228,8 +286,8 @@
 </template>
 
 <script>
-import { Items as Users } from "@/api/user"
 import UploadButton from "vuetify-upload-button"
+
 export default {
   components: {
     "upload-btn": UploadButton
@@ -237,11 +295,21 @@ export default {
 
   data() {
     return {
-      dataLoading: false,
-      dialogUpload: false,
-      dialogEdit: false,
-      dialogDelete: false,
-      dialogAddToPlaylist: false,
+      dialog: {
+        trackUpload: false,
+        trackEdit: false,
+        trackDelete: false,
+        trackAddToPlaylist: false,
+        playlistEdit: false
+      },
+      loading: {
+        trackUpload: false,
+        playlistImageUpload: false,
+        trackLoading: false,
+        trackUpdating: false,
+        trackDeleting: false,
+        playlistUpdating: false
+      },
       search: "",
       table: {
         selected: [],
@@ -271,8 +339,7 @@ export default {
       },
 
       newTrack: null,
-      formData: FormData,
-      trackUploadLoading: false,
+      formData: null,
 
       track: {},
       playlists: [],
@@ -285,14 +352,29 @@ export default {
     this.getPlaylists()
   },
 
+  computed: {
+    formatDurationTime() {
+      if (this.playlist.hasOwnProperty("total_duration")) {
+        let duration = this.playlist.total_duration.split(":")
+        return duration[0] + " hrs " + duration[1] + " mins "
+      }
+    },
+
+    isPlaylistEmpty() {
+      if (Object.keys(this.playlist).length === 0 && this.playlist.constructor === Object) {
+        return true
+      }
+    }
+  },
+
   methods: {
     /**
      * Get specific playlist info, including tracks for table.
      */
     getPlaylist(id) {
-      this.dataLoading = true
+      this.loading.trackLoading = true
       axios.get("/api/playlists/" + id).then(response => {
-        this.dataLoading = false
+        this.loading.trackLoading = false
         this.playlist = response.data
         this.table.items = response.data.tracks
       })
@@ -311,7 +393,7 @@ export default {
      * Get specific track info
      */
     getTrack(id) {
-      this.dialogEdit = true
+      this.dialog.trackEdit = true
       axios.get("/api/tracks/" + id).then(response => {
         this.track = response.data
       })
@@ -321,7 +403,7 @@ export default {
      * Show track deleting confirmation modal.
      */
     showTrackDeleteConfirmation(id) {
-      this.dialogDelete = true
+      this.dialog.trackDelete = true
       axios.get("/api/tracks/" + id).then(response => {
         this.track = response.data
       })
@@ -331,10 +413,30 @@ export default {
      * Update track info
      */
     updateTrack(id) {
-      this.dialogEdit = false
+      this.loading.trackUpdating = true
       axios.put("/api/tracks/" + id + "/update", this.track).then(response => {
+        this.loading.trackUpdating = false
+        this.dialog.trackEdit = false
         this.getPlaylist(this.$route.params.id) // refresh table
         this.track = {} // empty dialog form
+      })
+    },
+
+    /**
+     * Handle updating playlist.
+     */
+    updatePlaylist(id) {
+      this.loading.playlistUpdating = true
+      axios.put("/api/playlists/" + id + "/update", this.playlist).then(response => {
+        // Upload playlist image if is any set
+        if (this.formData && this.formData.has("image")) {
+          axios.post("/api/playlists/" + id + "/upload/image", this.formData).then(response => {
+            this.$refs.uploadImage.clear()
+          })
+        }
+        this.getPlaylist(this.$route.params.id) // refresh playlist
+        this.loading.playlistUpdating = false
+        this.dialog.playlistEdit = false
       })
     },
 
@@ -342,15 +444,17 @@ export default {
      * Delete given track
      */
     deleteTrack(id) {
-      this.dialogDelete = false
+      this.loading.trackDeleting = true
       axios.delete("api/tracks/" + id).then(response => {
+        this.loading.trackDeleting = false
+        this.dialog.trackDelete = false
         this.getPlaylist() // refresh table
         this.track = {} // mepty dialog form
       })
     },
 
     showAddToPlaylistDialog(id) {
-      this.dialogAddToPlaylist = true
+      this.dialog.trackAddToPlaylist = true
     },
 
     /**
@@ -365,21 +469,25 @@ export default {
     },
 
     /**
+     * Prepare playlist image for uploading.
+     */
+    prepareImage(file) {
+      // handle file here. File will be an object.
+      this.formData = new FormData()
+      this.formData.append("image", file)
+    },
+
+    /**
      * Upload track
      */
     uploadTrack() {
-      this.trackUploadLoading = true
+      this.loading.trackUpload = true
       axios.post("/api/tracks", this.formData).then(response => {
-        this.trackUploadLoading = false
-        this.dialogUpload = false
-        this.$refs.uploadButton.clear()
+        this.loading.trackUpload = false
+        this.dialog.trackUpload = false
+        this.$refs.uploadTrack.clear()
         this.getPlaylist(this.$route.params.id)
       })
-    },
-
-    formatDurationTime() {
-      let duration = this.playlist.total_duration.split(":")
-      return duration[0] + ' hrs ' + duration[1] + ' mins ' 
     }
   }
 }
