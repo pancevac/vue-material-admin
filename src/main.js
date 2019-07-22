@@ -19,7 +19,7 @@ if (store.getters['auth/isAuth']) {
 
 Vue.config.productionTip = false
 Vue.use(VueSnackbar, {
-  position: 'bottom-right',
+  position: "bottom-right",
   time: 6000,
   close: true 
 })

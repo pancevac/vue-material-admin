@@ -43,13 +43,7 @@
                   <td>{{ props.item.album }}</td>
                   <td>{{ props.item.duration }}</td>
                   <td>
-                    <v-btn
-                      fab
-                      dark
-                      color="indigo"
-                      small
-                      @click.stop="playTrack(props.item.id)"
-                    >
+                    <v-btn fab dark color="indigo" small @click.stop="playTrack(props.item)">
                       <v-icon>play_arrow</v-icon>
                     </v-btn>
                   </td>
@@ -60,13 +54,25 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <audio-player
+      v-if="playlist && playlist.tracks"
+      :tracks="playlist.tracks"
+      :play-this-track="selectedTrack"
+    ></audio-player>
   </div>
 </template>
 
 <script>
+import AudioPlayer from "@/components/media/audioPlayer/Player"
+
 export default {
+  components: {
+    AudioPlayer
+  },
+
   data() {
     return {
+      selectedTrack: null,
       loading: false,
       playlist: {},
       search: "",
@@ -124,8 +130,8 @@ export default {
     /**
      * Play track
      */
-    playTrack(id) {
-      //
+    playTrack(track) {
+      this.selectedTrack = track
     }
   }
 }
