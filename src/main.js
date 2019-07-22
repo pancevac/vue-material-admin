@@ -7,6 +7,8 @@ import config from "./config"
 import "./registerServiceWorker"
 import "roboto-fontface/css/roboto/roboto-fontface.css"
 import "font-awesome/css/font-awesome.css"
+import VueSnackbar from 'vue-snack' 
+import 'vue-snack/dist/vue-snack.min.css'
 
 window.axios = require("axios")
 window.axios.defaults.baseURL = config.baseUrl
@@ -16,6 +18,11 @@ if (store.getters['auth/isAuth']) {
 }
 
 Vue.config.productionTip = false
+Vue.use(VueSnackbar, {
+  position: 'bottom-right',
+  time: 6000,
+  close: true 
+})
 
 new Vue({
   router,

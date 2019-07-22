@@ -32,6 +32,7 @@
                 item-key="id"
                 select-all
                 v-model="table.selected"
+                :loading="loading"
               >
                 <template slot="items" slot-scope="props">
                   <td>
@@ -66,6 +67,7 @@
 export default {
   data() {
     return {
+      loading: false,
       playlist: {},
       search: "",
       table: {
@@ -106,10 +108,17 @@ export default {
      * Get specific playlist info, including tracks for table.
      */
     getPlaylist(id) {
-      axios.get("/api/playlists/" + id).then(response => {
-        this.playlist = response.data
-        this.table.items = response.data.tracks
-      })
+      this.loading = true
+      axios
+        .get("/api/playlists/" + id)
+        .then(response => {
+          this.playlist = response.data
+          this.table.items = response.data.tracks
+          this.loading = false
+        })
+        .catch(e => {
+          this.loading = false
+        })
     },
 
     /**

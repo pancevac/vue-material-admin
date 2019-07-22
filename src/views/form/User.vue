@@ -120,6 +120,7 @@ export default {
     updateUser() {
       this.loading.userSave = true
       axios.put(`/api/profile/${this.user.id}/update`, this.user).then(response => {
+        this.ok("User have been successfully updated.")
         this.getUser()
         this.loading.userSave = false
       }).catch(e => {
@@ -138,13 +139,23 @@ export default {
         return
       }
       this.loading.imageUpload = true
-      console.log(this.loading.imageUpload)
       axios.post(`/api/profile/${this.user.id}/upload/image`, this.formData).then(response => {
         this.loading.imageUpload = false
         this.$refs.uploadImage.clear()
+        this.ok('Successfully updated image.')
         this.getUser()
       }).catch(e => {
         this.loading.imageUpload = false
+      })
+    },
+
+    /**
+     * Wrapp snackbar in shorted method.
+     */
+    ok(text) {
+      this.$snack.success({
+        text: text,
+        button: "Close"
       })
     }
   }

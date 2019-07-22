@@ -412,6 +412,7 @@ export default {
       axios.put("/api/tracks/" + id + "/update", this.track).then(response => {
         this.loading.trackUpdating = false
         this.dialog.trackEdit = false
+        this.ok("Track successfully updated.")
         this.getPlaylist(this.$route.params.id) // refresh table
         this.track = {} // empty dialog form
       })
@@ -429,6 +430,7 @@ export default {
             this.$refs.uploadImage.clear()
           })
         }
+        this.ok("Playlist successfully updated.")
         this.getPlaylist(this.$route.params.id) // refresh playlist
         this.loading.playlistUpdating = false
         this.dialog.playlistEdit = false
@@ -443,6 +445,7 @@ export default {
       axios.delete("api/tracks/" + id).then(response => {
         this.loading.trackDeleting = false
         this.dialog.trackDelete = false
+        this.info("Track deleted!")
         this.getPlaylist() // refresh table
         this.track = {} // mepty dialog form
       })
@@ -481,7 +484,25 @@ export default {
         this.loading.trackUpload = false
         this.dialog.trackUpload = false
         this.$refs.uploadTrack.clear()
+        this.ok("Track successfully uploaded.")
         this.getPlaylist(this.$route.params.id)
+      })
+    },
+
+    /**
+     * Wrapp snackbar in shorted method.
+     */
+    ok(text) {
+      this.$snack.success({
+        text: text,
+        button: "Close"
+      })
+    },
+
+    info(text) {
+      this.$snack.show({
+        text: text,
+        button: "Close"
       })
     }
   }
