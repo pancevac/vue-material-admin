@@ -23,7 +23,7 @@
               class="mx-auto"
               width="350"
             >
-              <v-img :aspect-ratio="16/9" src="https://cdn.vuetifyjs.com/images/cards/cooking.png"></v-img>
+              <v-img :aspect-ratio="16/9" :src="playlist.media_path"></v-img>
               <v-card-title style="position: relative">
                 <v-hover>
                   <v-expand-transition>

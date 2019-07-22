@@ -12,12 +12,7 @@
 
         <v-flex xs12 lg4 v-if="!isPlaylistEmpty">
           <v-card width="350">
-            <v-img v-if="playlist.media_path" :aspect-radio="16/9" :src="playlist.media_path"></v-img>
-            <v-img
-              v-else
-              :aspect-ratio="16/9"
-              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-            ></v-img>
+            <v-img :aspect-radio="16/9" :src="playlist.media_path"></v-img>
             <v-btn @click.stop="dialog.playlistEdit = true" small>Edit</v-btn>
             <v-btn small color="primary">Listen</v-btn>
           </v-card>
