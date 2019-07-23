@@ -5,6 +5,7 @@
         <v-flex sm12>
           <h3>{{ playlist.name }}</h3>
         </v-flex>
+        <v-btn color="red" dark @click="togglePlayer">Show player</v-btn>
         <v-flex lg12>
           <v-card>
             <v-toolbar card color="white">
@@ -44,7 +45,8 @@
                   <td>{{ props.item.duration }}</td>
                   <td>
                     <v-btn fab dark color="indigo" small @click.stop="playTrack(props.item)">
-                      <v-icon>play_arrow</v-icon>
+                      <v-icon v-if="currentTrack == props.item">pause</v-icon>
+                      <v-icon v-else>play_arrow</v-icon>
                     </v-btn>
                   </td>
                 </template>
@@ -55,6 +57,7 @@
       </v-layout>
     </v-container>
     <audio-player
+      :show="showPlayer"
       v-if="playlist && playlist.tracks"
       :tracks="playlist.tracks"
       :play-this-track="selectedTrack"
@@ -72,6 +75,7 @@ export default {
 
   data() {
     return {
+      showPlayer: false,
       selectedTrack: null,
       loading: false,
       playlist: {},
@@ -109,6 +113,12 @@ export default {
     this.getPlaylist(this.$route.params.id)
   },
 
+  computed: {
+    currentTrack() {
+      return this.selectedTrack
+    }
+  },
+
   methods: {
     /**
      * Get specific playlist info, including tracks for table.
@@ -132,7 +142,12 @@ export default {
      */
     playTrack(track) {
       this.selectedTrack = track
-    }
+      this.togglePlayer()
+    },
+
+    togglePlayer() {
+      this.showPlayer = !this.showPlayer
+    },
   }
 }
 </script>
