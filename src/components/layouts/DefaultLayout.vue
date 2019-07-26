@@ -8,6 +8,9 @@
       <div class="page-wrapper">
         <router-view></router-view>
       </div>
+
+      <audio-player></audio-player>
+
       <!-- App Footer -->
       <v-footer height="auto" class="white pa-3 app--footer">
         <span class="caption">isocked.com Design &copy; {{ new Date().getFullYear() }}</span>
@@ -26,13 +29,15 @@ import AppDrawer from "@/components/AppDrawer"
 import AppToolbar from "@/components/AppToolbar"
 import AppFab from "@/components/AppFab"
 import PageHeader from "@/components/PageHeader"
+import AudioPlayer from "@/components/media/audioPlayer/Player"
 
 export default {
   components: {
     AppDrawer,
     AppToolbar,
     AppFab,
-    PageHeader
+    PageHeader,
+    AudioPlayer
   },
 
   data() {

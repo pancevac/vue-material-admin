@@ -1,5 +1,5 @@
 <template>
-  <v-bottom-sheet inset v-model="show">
+  <v-bottom-sheet inset persistent hide-overlay v-model="show">
     <v-card tile>
       <v-hover>
         <v-progress-linear
@@ -95,15 +95,6 @@ export default {
     PlayerInfo
   },
 
-  props: {
-    tracks: Array,
-    playThisTrack: Object,
-    show: {
-      type: Boolean,
-      default: false
-    }
-  },
-
   data() {
     return {
       songs: [],
@@ -118,26 +109,12 @@ export default {
     }
   },
 
-  created() {
-    // Map howl object to tracks array...
-    this.songs = this.tracks.map(track => ({
-      ...track,
-      howl: new Howl({
-        src: [track.media_path],
-        onend: () => {
-          if (this.loop) {
-            this.play(this.index)
-          } else {
-            this.skip("next")
-          }
-        }
-      })
-    }))
-
-    Howler.volume(this.volume)
-  },
-
   watch: {
+
+    currentTrack(track) {
+      this.$store.dispatch("player/setCurrentTrack", track)
+    },
+
     playThisTrack(track) {
       let selectedTrack = this.songs.filter(song => {
         return song.id == track.id
@@ -156,6 +133,25 @@ export default {
       } else {
         clearInterval(updateSeek)
       }
+    },
+
+    getPlaylist(playlist) {
+      // Map howl object to tracks array...
+      this.songs = playlist.map(track => ({
+        ...track,
+        howl: new Howl({
+          src: [track.media_path],
+          onend: () => {
+            if (this.loop) {
+              this.play(this.index)
+            } else {
+              this.skip("next")
+            }
+          }
+        })
+      }))
+
+      Howler.volume(this.volume)
     }
   },
 
@@ -171,6 +167,26 @@ export default {
 
     trackProgress() {
       return this.progress * 100
+    },
+
+    /**
+     * @see https://vuex.vuejs.org/guide/forms.html#two-way-computed-property
+     */
+    show: {
+      get() {
+        return this.$store.getters["player/isShown"]
+      },
+      set(value) {
+        return this.$store.dispatch("player/setShow", value)
+      }
+    },
+
+    getPlaylist() {
+      return this.$store.getters["player/getPlaylist"]
+    },
+
+    playThisTrack() {
+      return this.$store.getters["player/playThisTrack"]
     }
   },
 

@@ -5,7 +5,7 @@
         <v-flex sm12>
           <h3>{{ playlist.name }}</h3>
         </v-flex>
-        <v-btn color="red" dark @click="togglePlayer">Show player</v-btn>
+        <v-btn color="primary" dark :loading="loading" @click="startPlaylist">Listen</v-btn>
         <v-flex lg12>
           <v-card>
             <v-toolbar card color="white">
@@ -45,7 +45,7 @@
                   <td>{{ props.item.duration }}</td>
                   <td>
                     <v-btn fab dark color="indigo" small @click.stop="playTrack(props.item)">
-                      <v-icon v-if="currentTrack == props.item">pause</v-icon>
+                      <v-icon v-if="selectedTrack && selectedTrack.id == props.item.id">pause</v-icon>
                       <v-icon v-else>play_arrow</v-icon>
                     </v-btn>
                   </td>
@@ -56,26 +56,13 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <audio-player
-      :show="showPlayer"
-      v-if="playlist && playlist.tracks"
-      :tracks="playlist.tracks"
-      :play-this-track="selectedTrack"
-    ></audio-player>
   </div>
 </template>
 
 <script>
-import AudioPlayer from "@/components/media/audioPlayer/Player"
-
 export default {
-  components: {
-    AudioPlayer
-  },
-
   data() {
     return {
-      showPlayer: false,
       selectedTrack: null,
       loading: false,
       playlist: {},
@@ -115,7 +102,13 @@ export default {
 
   computed: {
     currentTrack() {
-      return this.selectedTrack
+      return this.$store.getters["player/getCurrentTrack"]
+    }
+  },
+
+  watch: {
+    currentTrack(track) {
+      this.selectedTrack = track
     }
   },
 
@@ -131,6 +124,9 @@ export default {
           this.playlist = response.data
           this.table.items = response.data.tracks
           this.loading = false
+          if (this.playlist.tracks.length !== 0) {
+            this.$store.dispatch("player/loadPlaylist", this.playlist.tracks)
+          }
         })
         .catch(e => {
           this.loading = false
@@ -142,12 +138,14 @@ export default {
      */
     playTrack(track) {
       this.selectedTrack = track
-      this.togglePlayer()
+      this.$store.dispatch("player/setPlayThisTrack", track)
+      this.$store.dispatch("player/setShow", true)
     },
 
-    togglePlayer() {
-      this.showPlayer = !this.showPlayer
-    },
+    startPlaylist() {
+      this.$store.dispatch("player/setPlayThisTrack", this.playlist.tracks[0])
+      this.$store.dispatch("player/setShow", true)
+    }
   }
 }
 </script>
